@@ -15,9 +15,10 @@ from reclaim_sdk.mixins.snoozeable import SnoozeableMixin
 from reclaim_sdk.mixins.plan_work import PlanWorkMixin
 from reclaim_sdk.mixins.restartable import RestartableMixin
 from reclaim_sdk.mixins.start_stoppable import StartStoppableMixin
+from reclaim_sdk.mixins.log_workable import LogWorkableMixin
 
 
-class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, StartStoppableMixin):
+class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, StartStoppableMixin, LogWorkableMixin):
     ENDPOINT: ClassVar[str] = "/api/tasks"
     USER_PARAM_REQUIRED: ClassVar[bool] = True
     _PLANNER_PATH_SEGMENT: ClassVar[str] = "task"
@@ -197,19 +198,6 @@ class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, Start
 
     def clear_exceptions(self) -> None:
         response = self._client.post(f"/api/planner/clear-exceptions/task/{self.id}")
-        self.from_api_data(response["taskOrHabit"])
-
-    def log_work(self, minutes: int, end: Optional[datetime] = None) -> None:
-        params = {"minutes": minutes}
-        if end:
-            # Convert local time to Zulu time
-            end = end.astimezone(timezone.utc)
-            # Truncate timestamp to match required format
-            params["end"] = end.isoformat()[:-9] + "Z"
-
-        response = self._client.post(
-            f"/api/planner/log-work/task/{self.id}", params=params
-        )
         self.from_api_data(response["taskOrHabit"])
 
     def reindex(self, sort_key: float) -> None:
