@@ -11,11 +11,13 @@ from reclaim_sdk.enums import (
     TaskSource,
     EventSubType,
 )
+from reclaim_sdk.mixins.snoozeable import SnoozeableMixin
 
 
-class Task(BaseResource):
+class Task(BaseResource, SnoozeableMixin):
     ENDPOINT: ClassVar[str] = "/api/tasks"
     USER_PARAM_REQUIRED: ClassVar[bool] = True
+    _PLANNER_PATH_SEGMENT: ClassVar[str] = "task"
 
     title: Optional[str] = Field(None, description="Task title")
     notes: Optional[str] = Field(None, description="Task notes")
