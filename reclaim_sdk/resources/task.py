@@ -12,9 +12,10 @@ from reclaim_sdk.enums import (
     EventSubType,
 )
 from reclaim_sdk.mixins.snoozeable import SnoozeableMixin
+from reclaim_sdk.mixins.plan_work import PlanWorkMixin
 
 
-class Task(BaseResource, SnoozeableMixin):
+class Task(BaseResource, SnoozeableMixin, PlanWorkMixin):
     ENDPOINT: ClassVar[str] = "/api/tasks"
     USER_PARAM_REQUIRED: ClassVar[bool] = True
     _PLANNER_PATH_SEGMENT: ClassVar[str] = "task"
