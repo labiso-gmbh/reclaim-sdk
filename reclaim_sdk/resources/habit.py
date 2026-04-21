@@ -40,7 +40,7 @@ class DailyHabit(
     duration_max: Optional[int] = Field(None, alias="durationMax")
     ideal_time: Optional[str] = Field(None, alias="idealTime")
     ideal_day: Optional[str] = Field(None, alias="idealDay")
-    recurrence: Optional[dict[str, Any]] = Field(None)
+    recurrence: Optional[str] = Field(None)
     times_per_period: Optional[int] = Field(None, alias="timesPerPeriod")
     additional_description: Optional[str] = Field(None, alias="additionalDescription")
     index: Optional[int] = Field(None)

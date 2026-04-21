@@ -27,7 +27,7 @@ class BaseResource(BaseModel):
         return cls(**data)
 
     def to_api_data(self) -> Dict:
-        return self.model_dump(exclude_unset=False, by_alias=True)
+        return self.model_dump(exclude_unset=False, by_alias=True, exclude_none=True)
 
     @classmethod
     def get(cls: Type[T], id: int, client: ReclaimClient = None) -> T:

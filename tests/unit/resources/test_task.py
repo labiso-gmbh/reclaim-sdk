@@ -16,13 +16,13 @@ def test_task_has_new_required_fields(client):
     t = Task(
         title="hello",
         priority=PriorityLevel.P3,
-        taskSource=TaskSource.RECLAIM,
+        taskSource={"type": "RECLAIM_APP"},
         readOnlyFields=[],
         sortKey=1.0,
         prioritizableType="TASK",
         type="TASK",
     )
-    assert t.task_source == TaskSource.RECLAIM
+    assert t.task_source == {"type": "RECLAIM_APP"}
     assert t.read_only_fields == []
     assert t.sort_key == 1.0
     assert t.type == "TASK"
@@ -51,7 +51,7 @@ def test_create_at_time_posts_to_at_time_endpoint(client, mock_api):
     route = mock_api.post("/api/tasks/at-time").mock(
         return_value=httpx.Response(200, json={"id": 99, "title": "at-time", "type": "TASK"})
     )
-    draft = Task(title="at-time", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    draft = Task(title="at-time", priority=PriorityLevel.P3)
     result = Task.create_at_time(draft, datetime(2026, 5, 1, 9, 0))
     assert route.called
     params = dict(route.calls.last.request.url.params)
@@ -123,7 +123,7 @@ def test_reindex_patches_with_sort_key(client, mock_api):
     route = mock_api.patch("/api/tasks/123/reindex").mock(
         return_value=httpx.Response(200, json={"id": 123, "sortKey": 5.5, "type": "TASK"})
     )
-    t = Task(id=123, title="x", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    t = Task(id=123, title="x", priority=PriorityLevel.P3)
     t.reindex(5.5)
     body = route.calls.last.request.content
     assert b'5.5' in body
@@ -133,7 +133,7 @@ def test_reschedule_event_posts(client, mock_api):
     route = mock_api.post("/api/planner/reschedule/task/event/evt-123").mock(
         return_value=httpx.Response(200, json={"taskOrHabit": {"id": 42, "type": "TASK"}})
     )
-    t = Task(id=42, title="x", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    t = Task(id=42, title="x", priority=PriorityLevel.P3)
     t.reschedule_event("evt-123")
     assert route.called
 
@@ -142,6 +142,6 @@ def test_delete_policy_deletes(client, mock_api):
     route = mock_api.delete("/api/planner/policy/task/42").mock(
         return_value=httpx.Response(200, json={"taskOrHabit": {"id": 42, "type": "TASK"}})
     )
-    t = Task(id=42, title="x", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    t = Task(id=42, title="x", priority=PriorityLevel.P3)
     t.delete_policy()
     assert route.called

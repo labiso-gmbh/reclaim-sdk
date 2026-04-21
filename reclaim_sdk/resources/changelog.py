@@ -4,7 +4,7 @@ from reclaim_sdk.client import ReclaimClient
 
 
 class ChangeLogEntryView(BaseModel):
-    id: Optional[str] = Field(None)
+    id: Optional[int] = Field(None)
     entity_id: Optional[str] = Field(None, alias="entityId")
     change_type: Optional[str] = Field(None, alias="changeType")
 

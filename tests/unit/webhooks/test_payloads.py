@@ -11,7 +11,7 @@ def test_parse_task_created_payload(client):
         "created": "2026-04-21T10:00:00Z",
         "task": {
             "id": 1, "title": "hello", "type": "TASK",
-            "priority": "P3", "taskSource": "RECLAIM",
+            "priority": "P3", "taskSource": {"type": "RECLAIM_APP"},
             "readOnlyFields": [], "sortKey": 1.0,
             "prioritizableType": "TASK",
             "eventCategory": "WORK", "eventSubType": "FOCUS",

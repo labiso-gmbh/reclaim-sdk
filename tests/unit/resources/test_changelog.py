@@ -5,7 +5,7 @@ from reclaim_sdk.resources.changelog import Changelog, ChangeLogEntryView
 def test_changelog_tasks(client, mock_api):
     route = mock_api.get("/api/changelog/tasks").mock(
         return_value=httpx.Response(200, json=[
-            {"id": "e1", "entityId": "1", "changeType": "CREATED"},
+            {"id": 1, "entityId": "1", "changeType": "CREATED"},
         ])
     )
     entries = Changelog.tasks([1, 2, 3])

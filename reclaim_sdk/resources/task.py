@@ -8,7 +8,6 @@ from reclaim_sdk.enums import (
     EventCategory,
     EventColor,
     TaskStatus,
-    TaskSource,
     EventSubType,
 )
 from reclaim_sdk.mixins.snoozeable import SnoozeableMixin
@@ -69,8 +68,10 @@ class Task(
     always_private: bool = Field(
         False, alias="alwaysPrivate", description="Task is always private"
     )
-    task_source: TaskSource = Field(
-        TaskSource.RECLAIM, alias="taskSource", description="Task origin"
+    task_source: Optional[dict] = Field(
+        None,
+        alias="taskSource",
+        description='Task origin, server-modeled as {"type": "<TaskSourceType>"}',
     )
     read_only_fields: list[str] = Field(
         default_factory=list,

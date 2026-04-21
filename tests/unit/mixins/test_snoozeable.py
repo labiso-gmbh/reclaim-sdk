@@ -8,7 +8,7 @@ def test_task_snooze_posts_to_snooze_endpoint(client, mock_api):
     route = mock_api.post("/api/planner/task/42/snooze").mock(
         return_value=httpx.Response(200, json={"taskOrHabit": {"id": 42, "type": "TASK"}})
     )
-    t = Task(id=42, title="x", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    t = Task(id=42, title="x", priority=PriorityLevel.P3)
     t.snooze(SnoozeOption.FROM_NOW_1H)
     assert route.called
     params = dict(route.calls.last.request.url.params)
@@ -19,6 +19,6 @@ def test_task_clear_snooze_posts(client, mock_api):
     route = mock_api.post("/api/planner/task/42/clear-snooze").mock(
         return_value=httpx.Response(200, json={"taskOrHabit": {"id": 42, "type": "TASK"}})
     )
-    t = Task(id=42, title="x", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    t = Task(id=42, title="x", priority=PriorityLevel.P3)
     t.clear_snooze()
     assert route.called

@@ -8,7 +8,7 @@ def test_log_work_sends_minutes_and_zulu_end(client, mock_api):
     route = mock_api.post("/api/planner/log-work/task/42").mock(
         return_value=httpx.Response(200, json={"taskOrHabit": {"id": 42, "type": "TASK"}})
     )
-    t = Task(id=42, title="x", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    t = Task(id=42, title="x", priority=PriorityLevel.P3)
     t.log_work(60, datetime(2026, 5, 1, 12, 0, tzinfo=timezone.utc))
     params = dict(route.calls.last.request.url.params)
     assert params["minutes"] == "60"

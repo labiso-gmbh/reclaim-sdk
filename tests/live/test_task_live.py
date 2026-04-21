@@ -1,7 +1,6 @@
 import pytest
-from datetime import datetime, timedelta, timezone
 from reclaim_sdk.resources.task import Task
-from reclaim_sdk.enums import PriorityLevel, TaskSource, SnoozeOption
+from reclaim_sdk.enums import PriorityLevel, SnoozeOption
 
 
 pytestmark = pytest.mark.live
@@ -11,7 +10,6 @@ def test_task_full_lifecycle(live_client, tracked_ids, prefix):
     task = Task(
         title=f"{prefix} lifecycle",
         priority=PriorityLevel.P3,
-        taskSource=TaskSource.RECLAIM,
     )
     task.duration = 1.0
     task.save()
@@ -28,7 +26,7 @@ def test_task_full_lifecycle(live_client, tracked_ids, prefix):
     # planner actions
     task.start()
     task.stop()
-    task.snooze(SnoozeOption.ONE_HOUR)
+    task.snooze(SnoozeOption.FROM_NOW_1H)
     task.clear_snooze()
     task.mark_complete()
     task.mark_incomplete()
