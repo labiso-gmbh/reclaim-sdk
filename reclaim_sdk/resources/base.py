@@ -12,6 +12,7 @@ class BaseResource(BaseModel):
     updated: datetime | None = Field(None, description="Last update timestamp")
 
     ENDPOINT: ClassVar[str] = ""
+    USER_PARAM_REQUIRED: ClassVar[bool] = False
     _client: ReclaimClient
 
     def __init__(self, **data):
@@ -32,7 +33,10 @@ class BaseResource(BaseModel):
     def get(cls: Type[T], id: int, client: ReclaimClient = None) -> T:
         if client is None:
             client = ReclaimClient()
-        data = client.get(f"{cls.ENDPOINT}/{id}")
+        params = {}
+        if cls.USER_PARAM_REQUIRED:
+            params["user"] = client.current_user().get("id")
+        data = client.get(f"{cls.ENDPOINT}/{id}", params=params)
         return cls.from_api_data(data)
 
     def refresh(self) -> None:
@@ -61,5 +65,7 @@ class BaseResource(BaseModel):
     def list(cls: Type[T], client: ReclaimClient = None, **params) -> List[T]:
         if client is None:
             client = ReclaimClient()
+        if cls.USER_PARAM_REQUIRED and "user" not in params:
+            params["user"] = client.current_user().get("id")
         data = client.get(cls.ENDPOINT, params=params)
         return [cls.from_api_data(item) for item in data]
