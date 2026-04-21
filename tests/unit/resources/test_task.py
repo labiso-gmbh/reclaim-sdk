@@ -117,3 +117,13 @@ def test_register_interest_posts(client, mock_api):
     Task.register_interest({"id": 7})
     body = route.calls.last.request.content
     assert b'"user"' in body and b'"id":7' in body
+
+
+def test_reindex_patches_with_sort_key(client, mock_api):
+    route = mock_api.patch("/api/tasks/123/reindex").mock(
+        return_value=httpx.Response(200, json={"id": 123, "sortKey": 5.5, "type": "TASK"})
+    )
+    t = Task(id=123, title="x", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    t.reindex(5.5)
+    body = route.calls.last.request.content
+    assert b'5.5' in body

@@ -178,14 +178,6 @@ class Task(BaseResource):
             client = ReclaimClient()
         client.post(cls.ENDPOINT + "/interest", json={"user": user})
 
-
-class TaskPatch(BaseModel):
-    task_id: int = Field(..., alias="taskId")
-    patch: dict[str, Any] = Field(default_factory=dict)
-    notification_key: Optional[str] = Field(None, alias="notificationKey")
-
-    model_config = {"populate_by_name": True}
-
     def prioritize(self) -> None:
         self._client.post(f"/api/planner/prioritize/task/{self.id}")
         self.refresh()
@@ -222,3 +214,18 @@ class TaskPatch(BaseModel):
     def stop(self) -> None:
         response = self._client.post(f"/api/planner/stop/task/{self.id}")
         self.from_api_data(response["taskOrHabit"])
+
+    def reindex(self, sort_key: float) -> None:
+        response = self._client.patch(
+            f"{self.ENDPOINT}/{self.id}/reindex",
+            json={"sortKey": sort_key},
+        )
+        self.__dict__.update(self.from_api_data(response).__dict__)
+
+
+class TaskPatch(BaseModel):
+    task_id: int = Field(..., alias="taskId")
+    patch: dict[str, Any] = Field(default_factory=dict)
+    notification_key: Optional[str] = Field(None, alias="notificationKey")
+
+    model_config = {"populate_by_name": True}
