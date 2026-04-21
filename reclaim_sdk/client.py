@@ -59,7 +59,9 @@ class ReclaimClient:
     def request(self, method: str, endpoint: str, **kwargs: Any) -> Dict[str, Any]:
         if "json" in kwargs:
             kwargs["content"] = json.dumps(
-                kwargs.pop("json"), default=self._datetime_encoder
+                kwargs.pop("json"),
+                default=self._datetime_encoder,
+                separators=(",", ":"),
             )
             kwargs["headers"] = kwargs.get("headers", {})
             kwargs["headers"]["Content-Type"] = "application/json"

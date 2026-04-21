@@ -1,6 +1,6 @@
-from pydantic import Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 from datetime import datetime, timezone
-from typing import ClassVar, Optional
+from typing import Any, ClassVar, Optional
 from reclaim_sdk.client import ReclaimClient
 from reclaim_sdk.resources.base import BaseResource
 from reclaim_sdk.enums import (
@@ -150,6 +150,35 @@ class Task(BaseResource):
             client = ReclaimClient()
         params = {"user": client.current_user().get("id")}
         return client.get(cls.ENDPOINT + "/min-index", params=params)
+
+    @classmethod
+    def batch_patch(cls, patches: list["TaskPatch"], client: ReclaimClient = None) -> dict:
+        if client is None:
+            client = ReclaimClient()
+        body = [p.model_dump(by_alias=True, exclude_none=True) for p in patches]
+        return client.patch(cls.ENDPOINT + "/batch", json=body)
+
+    @classmethod
+    def batch_delete(cls, patches: list["TaskPatch"], client: ReclaimClient = None) -> dict:
+        if client is None:
+            client = ReclaimClient()
+        body = [p.model_dump(by_alias=True, exclude_none=True) for p in patches]
+        return client.delete(cls.ENDPOINT + "/batch", json=body)
+
+    @classmethod
+    def batch_archive(cls, patches: list["TaskPatch"], client: ReclaimClient = None) -> dict:
+        if client is None:
+            client = ReclaimClient()
+        body = [p.model_dump(by_alias=True, exclude_none=True) for p in patches]
+        return client.patch(cls.ENDPOINT + "/batch/archive", json=body)
+
+
+class TaskPatch(BaseModel):
+    task_id: int = Field(..., alias="taskId")
+    patch: dict[str, Any] = Field(default_factory=dict)
+    notification_key: Optional[str] = Field(None, alias="notificationKey")
+
+    model_config = {"populate_by_name": True}
 
     def prioritize(self) -> None:
         self._client.post(f"/api/planner/prioritize/task/{self.id}")

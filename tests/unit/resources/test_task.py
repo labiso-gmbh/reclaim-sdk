@@ -71,3 +71,40 @@ def test_find_min_index_handles_null(client, mock_api):
     mock_api.get("/api/users/current").mock(return_value=httpx.Response(200, json={"id": 1}))
     mock_api.get("/api/tasks/min-index").mock(return_value=httpx.Response(200, json=None))
     assert Task.find_min_index() is None
+
+
+from reclaim_sdk.resources.task import TaskPatch
+
+
+def test_task_patch_model_aliases():
+    p = TaskPatch(taskId=1, patch={"title": "new"})
+    dumped = p.model_dump(by_alias=True)
+    assert dumped["taskId"] == 1
+    assert dumped["patch"] == {"title": "new"}
+
+
+def test_batch_patch_sends_array(client, mock_api):
+    route = mock_api.patch("/api/tasks/batch").mock(
+        return_value=httpx.Response(200, json={})
+    )
+    patches = [TaskPatch(taskId=1, patch={"title": "a"}),
+               TaskPatch(taskId=2, patch={"title": "b"})]
+    Task.batch_patch(patches)
+    body = route.calls.last.request.content
+    assert b'"taskId":1' in body and b'"taskId":2' in body
+
+
+def test_batch_delete_sends_array(client, mock_api):
+    route = mock_api.delete("/api/tasks/batch").mock(
+        return_value=httpx.Response(200, json={})
+    )
+    Task.batch_delete([TaskPatch(taskId=5, patch={})])
+    assert route.called
+
+
+def test_batch_archive_sends_array(client, mock_api):
+    route = mock_api.patch("/api/tasks/batch/archive").mock(
+        return_value=httpx.Response(200, json={})
+    )
+    Task.batch_archive([TaskPatch(taskId=5, patch={})])
+    assert route.called
