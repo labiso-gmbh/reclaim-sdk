@@ -155,7 +155,7 @@ class Task(
         data = client.post(
             cls.ENDPOINT + "/at-time", params=params, json=task.to_api_data()
         )
-        # response shape: CreateTaskAtTimeView — contains the created task under "task" or is the task itself
+        # CreateTaskAtTimeView: created task under "task", or the task itself
         payload = data.get("task", data) if isinstance(data, dict) else data
         return cls.from_api_data(payload)
 

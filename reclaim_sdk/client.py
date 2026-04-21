@@ -34,7 +34,8 @@ class ReclaimClient:
             token = os.environ.get("RECLAIM_TOKEN")
             if not token:
                 raise ValueError(
-                    "Reclaim token is required. Use ReclaimClient.configure() or set RECLAIM_TOKEN environment variable."
+                    "Reclaim token is required. Use ReclaimClient.configure() "
+                    "or set RECLAIM_TOKEN environment variable."
                 )
             self._config = ReclaimClientConfig(token=token)
 
