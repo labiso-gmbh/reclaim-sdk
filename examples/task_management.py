@@ -1,4 +1,5 @@
-from reclaim_sdk.resources.task import Task, TaskPriority, EventColor
+from reclaim_sdk.resources.task import Task
+from reclaim_sdk.enums import PriorityLevel, EventColor
 from reclaim_sdk.resources.hours import Hours
 from reclaim_sdk.exceptions import (
     RecordNotFound,
@@ -13,7 +14,7 @@ try:
     task = Task(
         title="My new task",
         due=datetime(2023, 12, 31),
-        priority=TaskPriority.P3,
+        priority=PriorityLevel.P3,
     )
 
     # Those are set via properties, so we can't set them directly

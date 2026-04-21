@@ -1,56 +1,28 @@
 from pydantic import Field, field_validator
 from datetime import datetime, timezone
 from typing import ClassVar, Optional
-from enum import Enum
 from reclaim_sdk.client import ReclaimClient
 from reclaim_sdk.resources.base import BaseResource
-
-
-class TaskPriority(str, Enum):
-    P1 = "P1"
-    P2 = "P2"
-    P3 = "P3"
-    P4 = "P4"
-
-
-class EventColor(str, Enum):
-    NONE = "NONE"
-    LAVENDER = "LAVENDER"
-    SAGE = "SAGE"
-    GRAPE = "GRAPE"
-    FLAMINGO = "FLAMINGO"
-    BANANA = "BANANA"
-    TANGERINE = "TANGERINE"
-    PEACOCK = "PEACOCK"
-    GRAPHITE = "GRAPHITE"
-    BLUEBERRY = "BLUEBERRY"
-    BASIL = "BASIL"
-    TOMATO = "TOMATO"
-
-
-class TaskStatus(str, Enum):
-    NEW = "NEW"
-    SCHEDULED = "SCHEDULED"
-    IN_PROGRESS = "IN_PROGRESS"
-    COMPLETE = "COMPLETE"
-    CANCELLED = "CANCELLED"
-    ARCHIVED = "ARCHIVED"
-
-
-class EventCategory(str, Enum):
-    WORK = "WORK"
-    PERSONAL = "PERSONAL"
+from reclaim_sdk.enums import (
+    PriorityLevel,
+    EventCategory,
+    EventColor,
+    TaskStatus,
+    TaskSource,
+    EventSubType,
+)
 
 
 class Task(BaseResource):
     ENDPOINT: ClassVar[str] = "/api/tasks"
+    USER_PARAM_REQUIRED: ClassVar[bool] = True
 
     title: Optional[str] = Field(None, description="Task title")
     notes: Optional[str] = Field(None, description="Task notes")
     event_category: EventCategory = Field(
         default=EventCategory.WORK, alias="eventCategory", description="Event category"
     )
-    event_sub_type: Optional[str] = Field(
+    event_sub_type: Optional[EventSubType] = Field(
         None, alias="eventSubType", description="Event subtype"
     )
     time_scheme_id: Optional[str] = Field(
@@ -71,7 +43,7 @@ class Task(BaseResource):
     time_chunks_remaining: Optional[int] = Field(
         None, alias="timeChunksRemaining", description="Time chunks remaining"
     )
-    priority: TaskPriority = Field(None, description="Task priority")
+    priority: Optional[PriorityLevel] = Field(None, description="Task priority")
     on_deck: bool = Field(False, alias="onDeck", description="Task is on deck")
     at_risk: bool = Field(False, alias="atRisk", description="Task is at risk")
     deleted: bool = Field(False, alias="deleted", description="Task is deleted")
@@ -80,6 +52,19 @@ class Task(BaseResource):
     always_private: bool = Field(
         False, alias="alwaysPrivate", description="Task is always private"
     )
+    task_source: TaskSource = Field(
+        TaskSource.RECLAIM, alias="taskSource", description="Task origin"
+    )
+    read_only_fields: list[str] = Field(
+        default_factory=list,
+        alias="readOnlyFields",
+        description="Server-enforced read-only fields",
+    )
+    sort_key: float = Field(0.0, alias="sortKey", description="Sort order key")
+    prioritizable_type: str = Field(
+        "TASK", alias="prioritizableType", description="Prioritizable polymorphic type"
+    )
+    type: str = Field("TASK", description="Discriminator for Task vs DailyHabit")
     status: Optional[TaskStatus] = Field(None, description="Task status")
     due: Optional[datetime] = Field(None, description="Due date")
     created: Optional[datetime] = Field(None, description="Created date")
