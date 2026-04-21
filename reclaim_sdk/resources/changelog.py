@@ -5,8 +5,13 @@ from reclaim_sdk.client import ReclaimClient
 
 class ChangeLogEntryView(BaseModel):
     id: Optional[int] = Field(None)
-    entity_id: Optional[str] = Field(None, alias="entityId")
-    change_type: Optional[str] = Field(None, alias="changeType")
+    changed_at: Optional[str] = Field(None, alias="changedAt")
+    reclaim_event_type: Optional[str] = Field(None, alias="reclaimEventType")
+    assignment_id: Optional[int] = Field(None, alias="assignmentId")
+    event_id: Optional[str] = Field(None, alias="eventId")
+    organizer_id: Optional[str] = Field(None, alias="organizerId")
+    actor_id: Optional[str] = Field(None, alias="actorId")
+    reason: Optional[str] = Field(None)
 
     model_config = {"populate_by_name": True, "extra": "allow"}
 
