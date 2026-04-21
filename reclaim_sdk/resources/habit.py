@@ -3,9 +3,12 @@ from typing import Any, ClassVar, Optional
 from pydantic import Field
 from reclaim_sdk.resources.base import BaseResource
 from reclaim_sdk.enums import EventCategory, EventColor, EventSubType, PriorityLevel
+from reclaim_sdk.mixins.start_stoppable import StartStoppableMixin
+from reclaim_sdk.mixins.restartable import RestartableMixin
+from reclaim_sdk.mixins.clear_exceptions import ClearExceptionsMixin
 
 
-class DailyHabit(BaseResource):
+class DailyHabit(BaseResource, StartStoppableMixin, RestartableMixin, ClearExceptionsMixin):
     ENDPOINT: ClassVar[str] = "/api/assist/habits/daily"
     _PLANNER_PATH_SEGMENT: ClassVar[str] = "habit"
 

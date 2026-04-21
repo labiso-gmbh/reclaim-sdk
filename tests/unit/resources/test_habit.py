@@ -25,3 +25,30 @@ def test_habit_get_by_id(client, mock_api):
     )
     h = DailyHabit.get(10)
     assert h.title == "Run"
+
+
+def test_habit_start_uses_habit_segment(client, mock_api):
+    route = mock_api.post("/api/planner/start/habit/10").mock(
+        return_value=httpx.Response(200, json={"taskOrHabit": {"id": 10, "type": "CUSTOM_DAILY"}})
+    )
+    h = DailyHabit(id=10, title="Run")
+    h.start()
+    assert route.called
+
+
+def test_habit_restart_uses_habit_segment(client, mock_api):
+    route = mock_api.post("/api/planner/restart/habit/10").mock(
+        return_value=httpx.Response(200, json={"taskOrHabit": {"id": 10, "type": "CUSTOM_DAILY"}})
+    )
+    h = DailyHabit(id=10, title="Run")
+    h.restart()
+    assert route.called
+
+
+def test_habit_clear_exceptions(client, mock_api):
+    route = mock_api.post("/api/planner/clear-exceptions/habit/10").mock(
+        return_value=httpx.Response(200, json={"taskOrHabit": {"id": 10, "type": "CUSTOM_DAILY"}})
+    )
+    h = DailyHabit(id=10, title="Run")
+    h.clear_exceptions()
+    assert route.called
