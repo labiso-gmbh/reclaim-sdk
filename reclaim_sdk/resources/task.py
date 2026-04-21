@@ -20,7 +20,16 @@ from reclaim_sdk.mixins.completable import CompletableMixin
 from reclaim_sdk.mixins.clear_exceptions import ClearExceptionsMixin
 
 
-class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, StartStoppableMixin, LogWorkableMixin, CompletableMixin, ClearExceptionsMixin):
+class Task(
+    BaseResource,
+    SnoozeableMixin,
+    PlanWorkMixin,
+    RestartableMixin,
+    StartStoppableMixin,
+    LogWorkableMixin,
+    CompletableMixin,
+    ClearExceptionsMixin,
+):
     ENDPOINT: ClassVar[str] = "/api/tasks"
     USER_PARAM_REQUIRED: ClassVar[bool] = True
     _PLANNER_PATH_SEGMENT: ClassVar[str] = "task"
@@ -138,8 +147,14 @@ class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, Start
     ) -> "Task":
         if client is None:
             client = ReclaimClient()
-        params = {"startTime": start_time.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")}
-        data = client.post(cls.ENDPOINT + "/at-time", params=params, json=task.to_api_data())
+        params = {
+            "startTime": start_time.astimezone(timezone.utc)
+            .isoformat()
+            .replace("+00:00", "Z")
+        }
+        data = client.post(
+            cls.ENDPOINT + "/at-time", params=params, json=task.to_api_data()
+        )
         # response shape: CreateTaskAtTimeView — contains the created task under "task" or is the task itself
         payload = data.get("task", data) if isinstance(data, dict) else data
         return cls.from_api_data(payload)
@@ -152,21 +167,27 @@ class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, Start
         return client.get(cls.ENDPOINT + "/min-index", params=params)
 
     @classmethod
-    def batch_patch(cls, patches: list["TaskPatch"], client: ReclaimClient = None) -> dict:
+    def batch_patch(
+        cls, patches: list["TaskPatch"], client: ReclaimClient = None
+    ) -> dict:
         if client is None:
             client = ReclaimClient()
         body = [p.model_dump(by_alias=True, exclude_none=True) for p in patches]
         return client.patch(cls.ENDPOINT + "/batch", json=body)
 
     @classmethod
-    def batch_delete(cls, patches: list["TaskPatch"], client: ReclaimClient = None) -> dict:
+    def batch_delete(
+        cls, patches: list["TaskPatch"], client: ReclaimClient = None
+    ) -> dict:
         if client is None:
             client = ReclaimClient()
         body = [p.model_dump(by_alias=True, exclude_none=True) for p in patches]
         return client.delete(cls.ENDPOINT + "/batch", json=body)
 
     @classmethod
-    def batch_archive(cls, patches: list["TaskPatch"], client: ReclaimClient = None) -> dict:
+    def batch_archive(
+        cls, patches: list["TaskPatch"], client: ReclaimClient = None
+    ) -> dict:
         if client is None:
             client = ReclaimClient()
         body = [p.model_dump(by_alias=True, exclude_none=True) for p in patches]
@@ -199,12 +220,20 @@ class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, Start
 
     def reschedule_event(self, event_id: str) -> None:
         response = self._client.post(f"/api/planner/reschedule/task/event/{event_id}")
-        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        payload = (
+            response.get("taskOrHabit", response)
+            if isinstance(response, dict)
+            else response
+        )
         self.__dict__.update(self.from_api_data(payload).__dict__)
 
     def delete_policy(self) -> None:
         response = self._client.delete(f"/api/planner/policy/task/{self.id}")
-        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        payload = (
+            response.get("taskOrHabit", response)
+            if isinstance(response, dict)
+            else response
+        )
         if payload:
             self.__dict__.update(self.from_api_data(payload).__dict__)
 

@@ -8,7 +8,9 @@ from reclaim_sdk.mixins.restartable import RestartableMixin
 from reclaim_sdk.mixins.clear_exceptions import ClearExceptionsMixin
 
 
-class DailyHabit(BaseResource, StartStoppableMixin, RestartableMixin, ClearExceptionsMixin):
+class DailyHabit(
+    BaseResource, StartStoppableMixin, RestartableMixin, ClearExceptionsMixin
+):
     ENDPOINT: ClassVar[str] = "/api/assist/habits/daily"
     _PLANNER_PATH_SEGMENT: ClassVar[str] = "habit"
 
@@ -57,18 +59,32 @@ class DailyHabit(BaseResource, StartStoppableMixin, RestartableMixin, ClearExcep
         params = {}
         if enable is not None:
             params["enable"] = str(enable).lower()
-        response = self._client.post(f"/api/planner/toggle/habit/{self.id}", params=params)
-        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        response = self._client.post(
+            f"/api/planner/toggle/habit/{self.id}", params=params
+        )
+        payload = (
+            response.get("taskOrHabit", response)
+            if isinstance(response, dict)
+            else response
+        )
         self.__dict__.update(self.from_api_data(payload).__dict__)
 
     def reschedule_event(self, event_id: str) -> None:
         response = self._client.post(f"/api/planner/reschedule/habit/event/{event_id}")
-        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        payload = (
+            response.get("taskOrHabit", response)
+            if isinstance(response, dict)
+            else response
+        )
         self.__dict__.update(self.from_api_data(payload).__dict__)
 
     def skip_event(self, event_id: str) -> None:
         response = self._client.post(f"/api/planner/skip/habit/event/{event_id}")
-        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        payload = (
+            response.get("taskOrHabit", response)
+            if isinstance(response, dict)
+            else response
+        )
         self.__dict__.update(self.from_api_data(payload).__dict__)
 
     def migrate_to_smart_series(self) -> None:
@@ -76,13 +92,18 @@ class DailyHabit(BaseResource, StartStoppableMixin, RestartableMixin, ClearExcep
 
     def delete_policy(self) -> None:
         response = self._client.delete(f"/api/planner/policy/habit/{self.id}")
-        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        payload = (
+            response.get("taskOrHabit", response)
+            if isinstance(response, dict)
+            else response
+        )
         if payload:
             self.__dict__.update(self.from_api_data(payload).__dict__)
 
     @classmethod
     def get_template(cls, client=None) -> dict:
         from reclaim_sdk.client import ReclaimClient
+
         if client is None:
             client = ReclaimClient()
         return client.get("/api/assist/habits/template")
@@ -90,6 +111,7 @@ class DailyHabit(BaseResource, StartStoppableMixin, RestartableMixin, ClearExcep
     @classmethod
     def list_templates(cls, role=None, department=None, client=None) -> list[dict]:
         from reclaim_sdk.client import ReclaimClient
+
         if client is None:
             client = ReclaimClient()
         params = {}
@@ -102,13 +124,17 @@ class DailyHabit(BaseResource, StartStoppableMixin, RestartableMixin, ClearExcep
     @classmethod
     def create_from_template(cls, template_id: str, client=None) -> "DailyHabit":
         import warnings
+
         warnings.warn(
             "create_from_template is deprecated by Reclaim — use direct habit creation",
             DeprecationWarning,
             stacklevel=2,
         )
         from reclaim_sdk.client import ReclaimClient
+
         if client is None:
             client = ReclaimClient()
-        data = client.post("/api/assist/habits/template/create", params={"templateId": template_id})
+        data = client.post(
+            "/api/assist/habits/template/create", params={"templateId": template_id}
+        )
         return cls.from_api_data(data)

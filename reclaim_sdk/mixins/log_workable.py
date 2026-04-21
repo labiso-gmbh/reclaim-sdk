@@ -15,5 +15,9 @@ class LogWorkableMixin:
             f"/api/planner/log-work/{self._PLANNER_PATH_SEGMENT}/{self.id}",
             params=params,
         )
-        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        payload = (
+            response.get("taskOrHabit", response)
+            if isinstance(response, dict)
+            else response
+        )
         self.__dict__.update(self.from_api_data(payload).__dict__)
