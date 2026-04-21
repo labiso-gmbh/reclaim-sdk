@@ -17,9 +17,10 @@ from reclaim_sdk.mixins.restartable import RestartableMixin
 from reclaim_sdk.mixins.start_stoppable import StartStoppableMixin
 from reclaim_sdk.mixins.log_workable import LogWorkableMixin
 from reclaim_sdk.mixins.completable import CompletableMixin
+from reclaim_sdk.mixins.clear_exceptions import ClearExceptionsMixin
 
 
-class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, StartStoppableMixin, LogWorkableMixin, CompletableMixin):
+class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, StartStoppableMixin, LogWorkableMixin, CompletableMixin, ClearExceptionsMixin):
     ENDPOINT: ClassVar[str] = "/api/tasks"
     USER_PARAM_REQUIRED: ClassVar[bool] = True
     _PLANNER_PATH_SEGMENT: ClassVar[str] = "task"
@@ -187,10 +188,6 @@ class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, Start
         response = self._client.post(
             f"/api/planner/add-time/task/{self.id}", params={"minutes": rounded_minutes}
         )
-        self.from_api_data(response["taskOrHabit"])
-
-    def clear_exceptions(self) -> None:
-        response = self._client.post(f"/api/planner/clear-exceptions/task/{self.id}")
         self.from_api_data(response["taskOrHabit"])
 
     def reindex(self, sort_key: float) -> None:
