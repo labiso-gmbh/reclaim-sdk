@@ -14,9 +14,10 @@ from reclaim_sdk.enums import (
 from reclaim_sdk.mixins.snoozeable import SnoozeableMixin
 from reclaim_sdk.mixins.plan_work import PlanWorkMixin
 from reclaim_sdk.mixins.restartable import RestartableMixin
+from reclaim_sdk.mixins.start_stoppable import StartStoppableMixin
 
 
-class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin):
+class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, StartStoppableMixin):
     ENDPOINT: ClassVar[str] = "/api/tasks"
     USER_PARAM_REQUIRED: ClassVar[bool] = True
     _PLANNER_PATH_SEGMENT: ClassVar[str] = "task"
@@ -209,14 +210,6 @@ class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin):
         response = self._client.post(
             f"/api/planner/log-work/task/{self.id}", params=params
         )
-        self.from_api_data(response["taskOrHabit"])
-
-    def start(self) -> None:
-        response = self._client.post(f"/api/planner/start/task/{self.id}")
-        self.from_api_data(response["taskOrHabit"])
-
-    def stop(self) -> None:
-        response = self._client.post(f"/api/planner/stop/task/{self.id}")
         self.from_api_data(response["taskOrHabit"])
 
     def reindex(self, sort_key: float) -> None:
