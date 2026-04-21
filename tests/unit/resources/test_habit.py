@@ -1,3 +1,5 @@
+import warnings
+
 import httpx
 from reclaim_sdk.resources.habit import DailyHabit
 
@@ -94,3 +96,30 @@ def test_habit_delete_policy(client, mock_api):
     )
     DailyHabit(id=10, title="Run").delete_policy()
     assert route.called
+
+
+def test_list_templates_with_filters(client, mock_api):
+    route = mock_api.get("/api/assist/habits/templates").mock(
+        return_value=httpx.Response(200, json=[])
+    )
+    DailyHabit.list_templates(role="engineer", department="tech")
+    params = dict(route.calls.last.request.url.params)
+    assert params["role"] == "engineer"
+    assert params["department"] == "tech"
+
+
+def test_get_template(client, mock_api):
+    mock_api.get("/api/assist/habits/template").mock(
+        return_value=httpx.Response(200, json={"id": "tmpl-1", "title": "Standup"})
+    )
+    assert DailyHabit.get_template()["id"] == "tmpl-1"
+
+
+def test_create_from_template_warns_deprecated(client, mock_api):
+    mock_api.post("/api/assist/habits/template/create").mock(
+        return_value=httpx.Response(200, json={"id": 99, "title": "Standup", "type": "CUSTOM_DAILY"})
+    )
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        DailyHabit.create_from_template("tmpl-1")
+    assert any(issubclass(w.category, DeprecationWarning) for w in caught)

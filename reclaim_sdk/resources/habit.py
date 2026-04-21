@@ -79,3 +79,36 @@ class DailyHabit(BaseResource, StartStoppableMixin, RestartableMixin, ClearExcep
         payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
         if payload:
             self.__dict__.update(self.from_api_data(payload).__dict__)
+
+    @classmethod
+    def get_template(cls, client=None) -> dict:
+        from reclaim_sdk.client import ReclaimClient
+        if client is None:
+            client = ReclaimClient()
+        return client.get("/api/assist/habits/template")
+
+    @classmethod
+    def list_templates(cls, role=None, department=None, client=None) -> list[dict]:
+        from reclaim_sdk.client import ReclaimClient
+        if client is None:
+            client = ReclaimClient()
+        params = {}
+        if role:
+            params["role"] = role
+        if department:
+            params["department"] = department
+        return client.get("/api/assist/habits/templates", params=params)
+
+    @classmethod
+    def create_from_template(cls, template_id: str, client=None) -> "DailyHabit":
+        import warnings
+        warnings.warn(
+            "create_from_template is deprecated by Reclaim — use direct habit creation",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        from reclaim_sdk.client import ReclaimClient
+        if client is None:
+            client = ReclaimClient()
+        data = client.post("/api/assist/habits/template/create", params={"templateId": template_id})
+        return cls.from_api_data(data)
