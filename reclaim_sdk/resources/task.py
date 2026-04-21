@@ -172,6 +172,12 @@ class Task(BaseResource):
         body = [p.model_dump(by_alias=True, exclude_none=True) for p in patches]
         return client.patch(cls.ENDPOINT + "/batch/archive", json=body)
 
+    @classmethod
+    def register_interest(cls, user: dict, client: ReclaimClient = None) -> None:
+        if client is None:
+            client = ReclaimClient()
+        client.post(cls.ENDPOINT + "/interest", json={"user": user})
+
 
 class TaskPatch(BaseModel):
     task_id: int = Field(..., alias="taskId")

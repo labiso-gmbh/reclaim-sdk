@@ -108,3 +108,12 @@ def test_batch_archive_sends_array(client, mock_api):
     )
     Task.batch_archive([TaskPatch(taskId=5, patch={})])
     assert route.called
+
+
+def test_register_interest_posts(client, mock_api):
+    route = mock_api.post("/api/tasks/interest").mock(
+        return_value=httpx.Response(200, json=None)
+    )
+    Task.register_interest({"id": 7})
+    body = route.calls.last.request.content
+    assert b'"user"' in body and b'"id":7' in body
