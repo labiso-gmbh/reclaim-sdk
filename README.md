@@ -1,5 +1,7 @@
 # reclaim-sdk - Python SDK for Reclaim.ai
 
+> **Migrating from 0.6.x to 0.7.0?** See `CHANGELOG.md` — enums moved, `user` param auto-resolved, new required Task fields.
+
 ⚠️ **WARNING: Major Changes in Version 0.5+** ⚠️
 
 The codebase has undergone substantial modifications starting from version 0.5. These updates introduce breaking changes that may impact existing implementations. Please consult the documentation thoroughly before upgrading from earlier versions.
