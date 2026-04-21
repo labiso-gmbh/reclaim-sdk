@@ -45,7 +45,7 @@ setup(
     include_package_data=True,
     install_requires=REQUIREMENTS,
     extras_require={
-        "dev": ["flake8", "black"],
+        "dev": ["flake8", "black", "pytest>=8", "respx>=0.21", "pytest-cov>=5"],
     },
     python_requires=">=3.7",
     entry_points={},
