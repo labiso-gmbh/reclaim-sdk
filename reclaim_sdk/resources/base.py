@@ -46,11 +46,14 @@ class BaseResource(BaseModel):
         data = client.get(f"{self.ENDPOINT}/{self.id}")
         self.__dict__.update(self.from_api_data(data).__dict__)
 
-    def save(self) -> None:
+    def save(self, strategy: str = "patch") -> None:
         client = self._client
         data = self.to_api_data()
         if self.id:
-            response = client.patch(f"{self.ENDPOINT}/{self.id}", json=data)
+            if strategy == "put":
+                response = client.put(f"{self.ENDPOINT}/{self.id}", json=data)
+            else:
+                response = client.patch(f"{self.ENDPOINT}/{self.id}", json=data)
         else:
             response = client.post(self.ENDPOINT, json=data)
         self.__dict__.update(self.from_api_data(response).__dict__)

@@ -41,3 +41,13 @@ def test_no_user_injection_when_not_required(client, mock_api):
     route = mock_api.get("/api/nouser").mock(return_value=httpx.Response(200, json=[]))
     _NoUser.list()
     assert "user" not in dict(route.calls.last.request.url.params)
+
+
+def test_save_with_put_strategy_uses_put(client, mock_api):
+    mock_api.get("/api/users/current").mock(return_value=httpx.Response(200, json={"id": 1}))
+    route = mock_api.put("/api/sample/5").mock(
+        return_value=httpx.Response(200, json={"id": 5, "title": "x"})
+    )
+    s = _Sample(id=5, title="x")
+    s.save(strategy="put")
+    assert route.called
