@@ -16,9 +16,10 @@ from reclaim_sdk.mixins.plan_work import PlanWorkMixin
 from reclaim_sdk.mixins.restartable import RestartableMixin
 from reclaim_sdk.mixins.start_stoppable import StartStoppableMixin
 from reclaim_sdk.mixins.log_workable import LogWorkableMixin
+from reclaim_sdk.mixins.completable import CompletableMixin
 
 
-class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, StartStoppableMixin, LogWorkableMixin):
+class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, StartStoppableMixin, LogWorkableMixin, CompletableMixin):
     ENDPOINT: ClassVar[str] = "/api/tasks"
     USER_PARAM_REQUIRED: ClassVar[bool] = True
     _PLANNER_PATH_SEGMENT: ClassVar[str] = "task"
@@ -122,14 +123,6 @@ class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, Start
     @up_next.setter
     def up_next(self, value: bool) -> None:
         self.on_deck = value
-
-    def mark_complete(self) -> None:
-        response = self._client.post(f"/api/planner/done/task/{self.id}")
-        self.from_api_data(response["taskOrHabit"])
-
-    def mark_incomplete(self) -> None:
-        response = self._client.post(f"/api/planner/unarchive/task/{self.id}")
-        self.from_api_data(response["taskOrHabit"])
 
     @classmethod
     def prioritize_by_due(cls, client: ReclaimClient = None) -> list["Task"]:
