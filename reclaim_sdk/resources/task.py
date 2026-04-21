@@ -132,6 +132,18 @@ class Task(BaseResource):
         data = client.patch("/api/tasks/reindex-by-due")
         return [cls.from_api_data(item) for item in (data or [])]
 
+    @classmethod
+    def create_at_time(
+        cls, task: "Task", start_time: datetime, client: ReclaimClient = None
+    ) -> "Task":
+        if client is None:
+            client = ReclaimClient()
+        params = {"startTime": start_time.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")}
+        data = client.post(cls.ENDPOINT + "/at-time", params=params, json=task.to_api_data())
+        # response shape: CreateTaskAtTimeView — contains the created task under "task" or is the task itself
+        payload = data.get("task", data) if isinstance(data, dict) else data
+        return cls.from_api_data(payload)
+
     def prioritize(self) -> None:
         self._client.post(f"/api/planner/prioritize/task/{self.id}")
         self.refresh()

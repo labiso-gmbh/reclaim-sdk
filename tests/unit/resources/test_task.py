@@ -42,3 +42,19 @@ def test_task_priority_old_enum_removed():
     # TaskPriority must no longer exist (breaking)
     import reclaim_sdk.resources.task as tm
     assert not hasattr(tm, "TaskPriority")
+
+
+from datetime import datetime
+
+
+def test_create_at_time_posts_to_at_time_endpoint(client, mock_api):
+    route = mock_api.post("/api/tasks/at-time").mock(
+        return_value=httpx.Response(200, json={"id": 99, "title": "at-time", "type": "TASK"})
+    )
+    draft = Task(title="at-time", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    result = Task.create_at_time(draft, datetime(2026, 5, 1, 9, 0))
+    assert route.called
+    params = dict(route.calls.last.request.url.params)
+    assert "startTime" in params
+    assert isinstance(result, Task)
+    assert result.id == 99
