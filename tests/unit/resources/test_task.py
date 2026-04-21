@@ -127,3 +127,21 @@ def test_reindex_patches_with_sort_key(client, mock_api):
     t.reindex(5.5)
     body = route.calls.last.request.content
     assert b'5.5' in body
+
+
+def test_reschedule_event_posts(client, mock_api):
+    route = mock_api.post("/api/planner/reschedule/task/event/evt-123").mock(
+        return_value=httpx.Response(200, json={"taskOrHabit": {"id": 42, "type": "TASK"}})
+    )
+    t = Task(id=42, title="x", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    t.reschedule_event("evt-123")
+    assert route.called
+
+
+def test_delete_policy_deletes(client, mock_api):
+    route = mock_api.delete("/api/planner/policy/task/42").mock(
+        return_value=httpx.Response(200, json={"taskOrHabit": {"id": 42, "type": "TASK"}})
+    )
+    t = Task(id=42, title="x", priority=PriorityLevel.P3, taskSource=TaskSource.RECLAIM)
+    t.delete_policy()
+    assert route.called

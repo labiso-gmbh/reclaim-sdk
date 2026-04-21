@@ -197,6 +197,17 @@ class Task(BaseResource, SnoozeableMixin, PlanWorkMixin, RestartableMixin, Start
         )
         self.__dict__.update(self.from_api_data(response).__dict__)
 
+    def reschedule_event(self, event_id: str) -> None:
+        response = self._client.post(f"/api/planner/reschedule/task/event/{event_id}")
+        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        self.__dict__.update(self.from_api_data(payload).__dict__)
+
+    def delete_policy(self) -> None:
+        response = self._client.delete(f"/api/planner/policy/task/{self.id}")
+        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        if payload:
+            self.__dict__.update(self.from_api_data(payload).__dict__)
+
 
 class TaskPatch(BaseModel):
     task_id: int = Field(..., alias="taskId")
