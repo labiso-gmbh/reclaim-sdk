@@ -52,3 +52,30 @@ class DailyHabit(BaseResource, StartStoppableMixin, RestartableMixin, ClearExcep
     auto_decline_text: Optional[str] = Field(None, alias="autoDeclineText")
     adjusted: Optional[bool] = Field(None)
     prioritizable_type: Optional[str] = Field(None, alias="prioritizableType")
+
+    def toggle(self, enable: Optional[bool] = None) -> None:
+        params = {}
+        if enable is not None:
+            params["enable"] = str(enable).lower()
+        response = self._client.post(f"/api/planner/toggle/habit/{self.id}", params=params)
+        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        self.__dict__.update(self.from_api_data(payload).__dict__)
+
+    def reschedule_event(self, event_id: str) -> None:
+        response = self._client.post(f"/api/planner/reschedule/habit/event/{event_id}")
+        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        self.__dict__.update(self.from_api_data(payload).__dict__)
+
+    def skip_event(self, event_id: str) -> None:
+        response = self._client.post(f"/api/planner/skip/habit/event/{event_id}")
+        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        self.__dict__.update(self.from_api_data(payload).__dict__)
+
+    def migrate_to_smart_series(self) -> None:
+        self._client.post(f"{self.ENDPOINT}/{self.id}/migrate-to-smart-series")
+
+    def delete_policy(self) -> None:
+        response = self._client.delete(f"/api/planner/policy/habit/{self.id}")
+        payload = response.get("taskOrHabit", response) if isinstance(response, dict) else response
+        if payload:
+            self.__dict__.update(self.from_api_data(payload).__dict__)
