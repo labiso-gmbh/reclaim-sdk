@@ -2,6 +2,7 @@ from pydantic import Field, field_validator
 from datetime import datetime, timezone
 from typing import ClassVar, Optional
 from enum import Enum
+from reclaim_sdk.client import ReclaimClient
 from reclaim_sdk.resources.base import BaseResource
 
 
@@ -140,8 +141,11 @@ class Task(BaseResource):
         self.from_api_data(response["taskOrHabit"])
 
     @classmethod
-    def prioritize_by_due(cls) -> None:
-        cls._client.patch("/api/tasks/reindex-by-due")
+    def prioritize_by_due(cls, client: ReclaimClient = None) -> list["Task"]:
+        if client is None:
+            client = ReclaimClient()
+        data = client.patch("/api/tasks/reindex-by-due")
+        return [cls.from_api_data(item) for item in (data or [])]
 
     def prioritize(self) -> None:
         self._client.post(f"/api/planner/prioritize/task/{self.id}")
