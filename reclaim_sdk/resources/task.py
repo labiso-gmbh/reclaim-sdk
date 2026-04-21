@@ -144,6 +144,13 @@ class Task(BaseResource):
         payload = data.get("task", data) if isinstance(data, dict) else data
         return cls.from_api_data(payload)
 
+    @classmethod
+    def find_min_index(cls, client: ReclaimClient = None) -> Optional[float]:
+        if client is None:
+            client = ReclaimClient()
+        params = {"user": client.current_user().get("id")}
+        return client.get(cls.ENDPOINT + "/min-index", params=params)
+
     def prioritize(self) -> None:
         self._client.post(f"/api/planner/prioritize/task/{self.id}")
         self.refresh()

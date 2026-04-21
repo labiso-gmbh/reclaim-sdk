@@ -58,3 +58,16 @@ def test_create_at_time_posts_to_at_time_endpoint(client, mock_api):
     assert "startTime" in params
     assert isinstance(result, Task)
     assert result.id == 99
+
+
+def test_find_min_index_returns_float(client, mock_api):
+    mock_api.get("/api/users/current").mock(return_value=httpx.Response(200, json={"id": 1}))
+    mock_api.get("/api/tasks/min-index").mock(return_value=httpx.Response(200, json=0.5))
+    result = Task.find_min_index()
+    assert result == 0.5
+
+
+def test_find_min_index_handles_null(client, mock_api):
+    mock_api.get("/api/users/current").mock(return_value=httpx.Response(200, json={"id": 1}))
+    mock_api.get("/api/tasks/min-index").mock(return_value=httpx.Response(200, json=None))
+    assert Task.find_min_index() is None

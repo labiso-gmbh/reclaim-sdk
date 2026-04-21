@@ -73,6 +73,8 @@ class ReclaimClient:
                 and not response.content
             ):
                 return {}
+            if not response.content:
+                return None
             return response.json()
         except httpx.HTTPStatusError as e:
             error_data = (
