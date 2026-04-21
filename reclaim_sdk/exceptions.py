@@ -12,3 +12,7 @@ class InvalidRecord(ReclaimAPIError):
 
 class AuthenticationError(ReclaimAPIError):
     """Raised when there's an authentication problem"""
+
+
+class SignatureVerificationError(ReclaimAPIError):
+    """Raised when a webhook signature does not match."""
