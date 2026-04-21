@@ -42,6 +42,7 @@ class ReclaimClient:
             base_url=self._config.base_url,
             headers={"Authorization": f"Bearer {self._config.token}"},
         )
+        self._user_cache: dict | None = None
 
     @classmethod
     def configure(cls, token: str, base_url: Optional[str] = None) -> "ReclaimClient":
@@ -50,6 +51,8 @@ class ReclaimClient:
         cls._config = config
         if not cls._instance:
             cls._instance = super().__new__(cls)
+        if cls._instance is not None:
+            cls._instance._user_cache = None
         cls._instance._initialize()
         return cls._instance
 
@@ -112,3 +115,8 @@ class ReclaimClient:
 
     def patch(self, endpoint: str, **kwargs: Any) -> Dict[str, Any]:
         return self.request("PATCH", endpoint, **kwargs)
+
+    def current_user(self) -> Dict[str, Any]:
+        if self._user_cache is None:
+            self._user_cache = self.get("/api/users/current")
+        return self._user_cache
