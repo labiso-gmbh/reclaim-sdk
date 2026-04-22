@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1 — 2026-04-22
+
+### Fixed
+
+- `ReclaimClient.configure(token, base_url=...)` now actually applies the supplied `base_url`. Previously the argument was silently dropped and the client always pointed at production (`https://api.app.reclaim.ai`).
+- `LogWorkableMixin.log_work(end=...)` (used by `Task.log_work`) now formats `end` as `YYYY-MM-DDTHH:MM:SS.mmmZ` for any input. Previously, datetimes with `microsecond == 0` had their seconds silently dropped (`YYYY-MM-DDTHH:MMZ`) due to a fixed-width `isoformat()[:-9]` slice.
+
 ## 0.7.0 — 2026-04-21
 
 ### Breaking Changes
