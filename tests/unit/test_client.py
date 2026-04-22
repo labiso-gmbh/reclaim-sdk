@@ -30,3 +30,17 @@ def test_configure_without_token_raises_when_env_missing(monkeypatch):
     ReclaimClient._config = None
     with pytest.raises(ValueError, match="token is required"):
         ReclaimClient()
+
+
+def test_configure_honours_base_url():
+    """Regression: configure(token, base_url=...) must store the base_url, not silently drop it."""
+    client = ReclaimClient.configure(token="t", base_url="https://staging.reclaim.ai")
+    assert ReclaimClient._config.base_url == "https://staging.reclaim.ai"
+    # The httpx session must also be wired to the override host.
+    assert str(client.session.base_url).rstrip("/") == "https://staging.reclaim.ai"
+
+
+def test_configure_default_base_url_when_omitted():
+    """Default base_url is preserved when caller passes only the token."""
+    ReclaimClient.configure(token="t")
+    assert ReclaimClient._config.base_url == "https://api.app.reclaim.ai"
