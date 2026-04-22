@@ -48,7 +48,10 @@ class ReclaimClient:
     @classmethod
     def configure(cls, token: str, base_url: Optional[str] = None) -> "ReclaimClient":
         """Configure the ReclaimClient with the given token and optional base URL."""
-        config = ReclaimClientConfig(token=token)
+        if base_url is not None:
+            config = ReclaimClientConfig(token=token, base_url=base_url)
+        else:
+            config = ReclaimClientConfig(token=token)
         cls._config = config
         if not cls._instance:
             cls._instance = super().__new__(cls)
