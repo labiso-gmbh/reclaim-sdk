@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.8.0 — 2026-05-07
+
+### Breaking Changes
+
+- `Hours.id` is now `Optional[str]` (UUID) instead of inheriting `Optional[int]` from `BaseResource`. Time schemes have always been UUIDs server-side; the previous integer hint was wrong.
+- `Hours.task_target_calendar` field reinstated as a read-only mirror of the server-resolved calendar object. To set the target calendar on create/update, use the new `task_target_calendar_id: int` field — that's what the API actually accepts.
+
+### Added
+
+**Hours / time schemes — full CRUD against `/api/timeschemes`:**
+- `Hours.policy_type: PolicyType` — `CUSTOM`, `WORK`, `PERSONAL`, `MEETING`
+- `Hours.policy: TimeSchemePolicy` with `day_hours: dict[Weekday, DayIntervals]` — required for `policy_type=CUSTOM`
+- New nested models: `TimeSchemePolicy`, `DayIntervals`, `Interval` (HH:MM:SS time strings)
+- New enums: `Weekday`, `TimeSchemeFeature`, `PolicyType`
+- `Hours.task_target_calendar_id: int` — calendar where scheduled events land
+- `examples/hours.py` — end-to-end CRUD demo
+
+**Client:**
+- `ReclaimClient` JSON encoder now also serialises `datetime.time` (HH:MM:SS) and `datetime.date` (ISO 8601), needed by `Hours.policy.day_hours` intervals.
+
+### Fixed
+
+- README + project docs no longer claim `Hours` is a read-only list — basic CRUD was always inherited from `BaseResource`, but the model was too thin (6 fields) to send a usable payload. Schema reverse-engineered from `app.reclaim.ai` network captures.
+
 ## 0.7.1 — 2026-04-22
 
 ### Fixed

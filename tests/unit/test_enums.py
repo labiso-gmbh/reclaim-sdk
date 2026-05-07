@@ -1,6 +1,7 @@
 from reclaim_sdk.enums import (
     PriorityLevel, EventCategory, EventColor, TaskStatus,
     TaskSource, SnoozeOption, EventSubType,
+    Weekday, TimeSchemeFeature, PolicyType,
 )
 
 
@@ -37,3 +38,24 @@ def test_snooze_option_has_options():
 def test_event_sub_type_is_enum():
     # Just ensure it's importable and has members
     assert len(list(EventSubType)) > 0
+
+
+def test_weekday_has_seven_days():
+    values = {e.value for e in Weekday}
+    assert values == {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY",
+                      "FRIDAY", "SATURDAY", "SUNDAY"}
+
+
+def test_time_scheme_feature_known_values():
+    values = {e.value for e in TimeSchemeFeature}
+    expected = {
+        "TASK_ASSIGNMENT", "HABIT_ASSIGNMENT", "SCHEDULING_LINK_MEETING",
+        "SMART_HABIT", "ONE_ON_ONE_ASSIGNMENT", "SMART_MEETING",
+    }
+    # must cover the six features observed live; allow forward-compatible extras
+    assert expected.issubset(values)
+
+
+def test_policy_type_covers_observed_values():
+    values = {e.value for e in PolicyType}
+    assert {"CUSTOM", "WORK", "PERSONAL", "MEETING"}.issubset(values)

@@ -14,7 +14,7 @@ As of 0.7.0, reclaim-sdk covers:
 
 - **Tasks** — full CRUD, planner actions (start/stop/snooze/plan-work/complete/log-work/etc.), batch operations, per-task reindex
 - **Habits** — `DailyHabit` CRUD, planner actions (start/stop/restart/toggle/reschedule/skip), templates
-- **Hours** — list of time schemes
+- **Hours** — full CRUD on time schemes (custom day-hour intervals, `policyType`, features, target calendar)
 - **Webhooks** — subscribe to task/habit events, typed payload models (`TaskWebhookEvent`, `HabitWebhookEvent`), HMAC-SHA256 signature verification
 - **Changelog** — read change feeds for tasks, events, habits, meetings, scheduling links
 
@@ -55,6 +55,7 @@ The SDK uses Pydantic models for better type checking and data validation. Pleas
 - [Habit Management](/examples/habit_management.py) — list + toggle existing habits
 - [Webhooks](/examples/webhooks.py) — subscribe + parse incoming payloads + verify signatures
 - [Changelog](/examples/changelog.py) — poll change feeds
+- [Hours](/examples/hours.py) — list / create / update / delete time schemes (custom working hours)
 
 ### Breaking changes from 0.6.x
 
