@@ -73,6 +73,41 @@ class SnoozeOption(str, Enum):
     NEXT_WEEK = "NEXT_WEEK"
 
 
+class Weekday(str, Enum):
+    MONDAY = "MONDAY"
+    TUESDAY = "TUESDAY"
+    WEDNESDAY = "WEDNESDAY"
+    THURSDAY = "THURSDAY"
+    FRIDAY = "FRIDAY"
+    SATURDAY = "SATURDAY"
+    SUNDAY = "SUNDAY"
+
+
+class TimeSchemeFeature(str, Enum):
+    """Capability flags a time scheme can serve.
+
+    Values match the ``features`` array on ``/api/timeschemes`` payloads.
+    """
+
+    TASK_ASSIGNMENT = "TASK_ASSIGNMENT"
+    HABIT_ASSIGNMENT = "HABIT_ASSIGNMENT"
+    SMART_HABIT = "SMART_HABIT"
+    ONE_ON_ONE_ASSIGNMENT = "ONE_ON_ONE_ASSIGNMENT"
+    SMART_MEETING = "SMART_MEETING"
+    SCHEDULING_LINK_MEETING = "SCHEDULING_LINK_MEETING"
+
+
+class PolicyType(str, Enum):
+    """Time-scheme policy type. ``CUSTOM`` is required to send a custom
+    ``policy.dayHours`` payload; the others are server-managed presets that
+    map to the user's main Work/Personal/Meeting hours."""
+
+    CUSTOM = "CUSTOM"
+    WORK = "WORK"
+    PERSONAL = "PERSONAL"
+    MEETING = "MEETING"
+
+
 class EventSubType(str, Enum):
     """Event subtype — values match Reclaim Swagger ``EventSubType`` schema."""
 

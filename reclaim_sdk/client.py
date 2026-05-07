@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 import os
 import json
-from datetime import datetime, timezone
+from datetime import date, datetime, time, timezone
 import httpx
 from typing import Any, Dict, Optional
 from reclaim_sdk.exceptions import (
@@ -105,6 +105,11 @@ class ReclaimClient:
     def _datetime_encoder(obj: Any) -> str:
         if isinstance(obj, datetime):
             return obj.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+        if isinstance(obj, time):
+            # ``HH:MM:SS`` — used by /api/timeschemes day-hour intervals.
+            return obj.isoformat(timespec="seconds")
+        if isinstance(obj, date):
+            return obj.isoformat()
         raise TypeError(
             f"Object of type {obj.__class__.__name__} is not JSON serializable"
         )
