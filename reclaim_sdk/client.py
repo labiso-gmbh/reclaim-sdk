@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 import os
 import json
 from datetime import date, datetime, time, timezone
@@ -17,6 +17,13 @@ class ReclaimClientConfig(BaseModel):
     base_url: str = Field(
         "https://api.app.reclaim.ai", description="Reclaim API base URL"
     )
+
+    @field_validator("base_url")
+    @classmethod
+    def require_https(cls, value: str) -> str:
+        if not value.lower().startswith("https://"):
+            raise ValueError("base_url must use https")
+        return value
 
 
 class ReclaimClient:
